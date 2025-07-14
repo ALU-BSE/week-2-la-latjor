@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Records - Beautiful Pagination</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- External CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'records/css/styles.css' %}" />
+  </head>
+  <body>
+    {% comment %}
+    <!-- Theme Toggle -->
+    <button
+      class="theme-toggle"
+      onclick="toggleTheme()"
+      title="Toggle Dark Mode"
+    >
+      🌙
+    </button>
+    {% endcomment %}
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" onclick="scrollToTop()" title="Scroll to Top">
+      ↑
+    </button>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+      <div class="header">
+        <h1>Records Collection</h1>
+        <p>Explore our beautifully paginated records</p>
+      </div>
+
+      <!-- Search Section -->
+      <div class="search-section">
+        <form class="search-form" method="GET">
+          <input
+            type="text"
+            name="search"
+            class="search-input"
+            placeholder="🔍 Search records..."
+            value="{{ request.GET.search }}"
+          />
+          <button type="submit" class="search-btn">Search</button>
+          {% if request.GET.search %}
+          <a
+            href="?"
+            class="search-btn"
+            style="background: #e53e3e; text-decoration: none"
+            >Clear</a
+          >
+          {% endif %}
+        </form>
+      </div>
+
+      <!-- Stats Section -->
+      {% if page_obj %}
+      <div class="stats-section">
+        <div class="stat-card">
+          <div class="stat-number">{{ page_obj.paginator.count }}</div>
+          <div class="stat-label">Total Records</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ page_obj.paginator.num_pages }}</div>
+          <div class="stat-label">Total Pages</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ page_obj.number }}</div>
+          <div class="stat-label">Current Page</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ page_obj|length }}</div>
+          <div class="stat-label">Records on Page</div>
+        </div>
+      </div>
+      {% endif %} {% if page_obj %}
+      <div class="records-grid">
+        {% for record in page_obj %}
+        <div class="record-card">
+          <h2 class="record-title">{{ record.title }}</h2>
+          <p class="record-description">{{ record.description }}</p>
+          <div class="record-date">{{ record.created_at|date:"F j, Y" }}</div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="pagination">
+        <div class="step-links">
+          {% if page_obj.has_previous %}
+          <a href="?page=1">&laquo; First</a>
+          <a href="?page={{ page_obj.previous_page_number }}">‹ Previous</a>
+          {% endif %}
+
+          <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Next ›</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+          {% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <h3>No records found</h3>
+        <p>There are currently no records to display.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="{% static 'records/js/scripts.js' %}"></script>
+  </body>
+</html>
